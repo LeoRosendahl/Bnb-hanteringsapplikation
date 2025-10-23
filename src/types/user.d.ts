@@ -1,10 +1,10 @@
-interface NewUser { 
+interface NewUserProfile { 
   email: string;
   username: string;
 }
 
 
-interface User extends NewUser {
+interface Profile extends NewUserProfile {
     id: string; // samma som auth.users.id som är supabase egna tabell för auth.users
     username: string;
     email: string;

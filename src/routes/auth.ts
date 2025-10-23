@@ -39,8 +39,21 @@ authApp.post("/register", async (c) => {
   return c.json({ message: "User registered", userId}, 200)
 });
 
-// authApp.post("/register", async (c) => {
-
-// })
+// login function for auth users
+authApp.post("/login", async (c) => {
+  const {email, password} = await c.req.json();
+  // kan man ha user istället för supabase här?
+  const sb = c.get("supabase")
+  const {data, error} = await sb.auth.signInWithPassword({
+    email,
+    password
+  });
+  if (error) {
+    throw new HTTPException(400, {
+      res: c.json({error: "Invalid credentials"}, 400)
+    });
+  };
+  return c.json(data.user, 200)
+})
 
 export default authApp;

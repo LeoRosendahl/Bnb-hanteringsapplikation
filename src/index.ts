@@ -5,6 +5,8 @@ import usersApp from './routes/users.js';
 import { HTTPException } from "hono/http-exception";
 import { supabase } from "./lib/supabase.js";
 import authApp from './routes/auth.js';
+import { supabaseMiddleware } from './middleware/auth.js';
+import listingApp from './routes/listing.js';
 dotenv.config();
 
 const app = new Hono( {
@@ -17,10 +19,16 @@ app.use("*", (c,next) => {
   c.set("supabase", supabase)
   return next()
 })
+
+app.use("*", supabaseMiddleware)
+
 // auth routing
 app.route("/auth", authApp)
 // routing for users
 app.route("/users", usersApp)
+
+// routing for listings
+app.route("/listings", listingApp)
 
 app.get('/', (c) => {
   return c.text('Hello Honoooo!')

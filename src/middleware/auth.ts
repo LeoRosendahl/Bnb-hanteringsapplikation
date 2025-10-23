@@ -1,18 +1,22 @@
 // middleware/auth.ts
 import type { Context, Next } from "hono";
 import { setCookie } from "hono/cookie";
+// INGEN ANING OM VAD DETTA GÖR TA HJÄLP
+import type { User as SupabaseUser } from "@supabase/auth-js";
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { supabaseUrl, supabaseAnonKey } from "../../lib/supabase.js";
+import { supabaseUrl, supabaseAnonKey } from "../lib/supabase.js";
 
-// 🧩 Gör så att Hono's Context känner till "supabase"
+// Gör så att Hono's Context känner till "supabase"
 declare module "hono" {
   interface ContextVariableMap {
     supabase: SupabaseClient;
+    // INGEN ANING OM DETTA BE OM HJÄLP
+    user: SupabaseUser | null;
   }
 }
 
-// 🧠 Viktigt: rätt signatur + return-typ = Promise<void>
+// Viktigt: rätt signatur + return-typ = Promise<void>
 export async function supabaseMiddleware(c: Context, next: Next): Promise<void> {
   // Skapa Supabase-klienten för varje request
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -39,8 +43,26 @@ export async function supabaseMiddleware(c: Context, next: Next): Promise<void> 
   // Lägg till i context så du kan använda c.get("supabase") i routes
   c.set("supabase", supabase);
 
-  // 🧩 Det här steget är avgörande
+  // Det här steget är avgörande
   await next();
 
-  // (returnera ingenting)
+}
+
+
+export async function requireAuth(c: Context, next: Next) {
+  const supabase = c.get("supabase");
+
+  // checking if supabase client exists
+  if(!supabase) {
+    return c.json({error: "Supabase client not found"})
+  }
+  const {data, error} = await supabase.auth.getUser();
+  console.log(data, error)
+  const user = data.user
+
+  if(error || !user) {
+    return c.json({error: "Unauthorized"}, 401);
+  }
+  c.set("user", user)
+  await next()
 }
