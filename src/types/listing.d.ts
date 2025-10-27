@@ -15,5 +15,6 @@ interface Listing extends NewListing {
 interface listingWithAgent extends Listing {
     listing_agent: {
         id: string
+        name: string
     }
 }

@@ -9,7 +9,7 @@ import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 const authApp = new Hono()
 
 authApp.post("/register", async (c) => {
-  const { email, password, username } = await c.req.json();
+  const { email, password, name } = await c.req.json();
   const sb = c.get("supabase");
   // använder data, error då error är inbyggt i supabase authError hantering data
   // får värdet av email och password
@@ -28,7 +28,7 @@ authApp.post("/register", async (c) => {
   }
 
   // lägger till den nya användaren i min tabell
-  const {error: insertError } = await sb.from("users").insert([{ id: userId, email, username }]);
+  const {error: insertError } = await sb.from("users").insert([{ id: userId, email, name }]);
 
   if (insertError) {
     console.log( "inserterror: ", insertError)

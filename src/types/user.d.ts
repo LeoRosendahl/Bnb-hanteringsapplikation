@@ -1,12 +1,13 @@
 interface NewUserProfile { 
   email: string;
-  username: string;
+  name: string;
 }
 
 
 interface Profile extends NewUserProfile {
     id: string; // samma som auth.users.id som är supabase egna tabell för auth.users
-    username: string;
+    name: string;
     email: string;
+    is_admin: boolean
     created_at?: string;
 }

@@ -7,6 +7,7 @@ import { supabase } from "./lib/supabase.js";
 import authApp from './routes/auth.js';
 import { supabaseMiddleware } from './middleware/auth.js';
 import listingApp from './routes/listing.js';
+import bookingApp from './routes/bookings.js';
 dotenv.config();
 
 const app = new Hono( {
@@ -29,6 +30,8 @@ app.route("/users", usersApp)
 
 // routing for listings
 app.route("/listings", listingApp)
+
+app.route("/bookings", bookingApp)
 
 app.get('/', (c) => {
   return c.text('Hello Honoooo!')
