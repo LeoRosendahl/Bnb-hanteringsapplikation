@@ -33,9 +33,9 @@ export const getBookings = async (sb: SupabaseClient) => {
 // create booking
 export const createBooking = async (sb: SupabaseClient,booking: NewBooking, userId: string, listingId: string) => {
    const bookingWithUserIdAndListingId = {...booking, user_id: userId, listing_id: listingId}
-    console.log("bookingWithUserIdAndListingId",bookingWithUserIdAndListingId)
    const query = sb.from("bookings").insert(bookingWithUserIdAndListingId).select(selectBookingsWithListingAndUserId).single();
    const response = await query as PostgrestSingleResponse<BookingWithUserAndListing>
+   
    return response
 }
 
@@ -43,7 +43,9 @@ export const createBooking = async (sb: SupabaseClient,booking: NewBooking, user
 // And listing angent
 export async function getBookingsById(sb: SupabaseClient ,id: string): Promise<Booking> {
     const {data, error}: PostgrestSingleResponse<BookingWithUserAndListing> = await sb.from("bookings").select(selectBookingsWithListingAndUserId).eq("id", id).single()
-
+    if (!data) {
+    throw new Error("Booking not found");
+  }
     if(error) {
         throw error;
     }
@@ -55,7 +57,7 @@ export async function deleteBookingById(sb: SupabaseClient,id: string, userId: s
     const {error} = await sb.from("bookings").delete().eq("id", id).eq("user_id", userId).select().single()
 
     if(error) {
-        // add return and error message "Error deleting"
+    //    with throw use try catch in route
         throw error;
     }
     return
