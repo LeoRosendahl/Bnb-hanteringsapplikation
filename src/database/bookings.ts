@@ -36,6 +36,17 @@ export const createBooking = async (sb: SupabaseClient,booking: NewBooking, user
    const query = sb.from("bookings").insert(bookingWithUserIdAndListingId).select(selectBookingsWithListingAndUserId).single();
    const response = await query as PostgrestSingleResponse<BookingWithUserAndListing>
    
+   // Uppdatera availability till false EFTER att bokningen skapats
+  if (response.data) {
+    const { error: updateError } = await sb
+      .from("listings")
+      .update({ availability: false })
+      .eq("id", listingId);
+
+    if (updateError) {
+      console.error("Failed to update listing availability:", updateError.message);
+    }
+  }
    return response
 }
 
