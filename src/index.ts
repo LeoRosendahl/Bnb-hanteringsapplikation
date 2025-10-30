@@ -8,11 +8,19 @@ import authApp from './routes/auth.js';
 import { supabaseMiddleware } from './middleware/auth.js';
 import listingApp from './routes/listing.js';
 import bookingApp from './routes/bookings.js';
+import { cors } from 'hono/cors';
 dotenv.config();
 
 const app = new Hono( {
   strict: false
 });
+
+app.use("*", cors({
+   origin: ["http://localhost:5173"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+}))
 
 const serverStartTime = Date.now()
 
