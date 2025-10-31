@@ -16,7 +16,7 @@ listingApp.post("/", requireAuth, listingValidator, async (c) => {
     const listingData: NewListing = await c.req.json();
 
     // this will sen data to createListing with user.id
-    const response = await db.createListing(sb, listingData, user.id)
+    const response = await db.createListing(sb, listingData, user?.id)
     console.log(response)
 
     if (response.error) {

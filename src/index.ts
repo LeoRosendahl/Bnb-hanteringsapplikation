@@ -9,6 +9,7 @@ import { supabaseMiddleware } from './middleware/auth.js';
 import listingApp from './routes/listing.js';
 import bookingApp from './routes/bookings.js';
 import { cors } from 'hono/cors';
+import meApp from './routes/me.js';
 dotenv.config();
 
 const app = new Hono( {
@@ -30,7 +31,8 @@ app.use("*", (c,next) => {
 })
 
 app.use("*", supabaseMiddleware)
-
+// me routing
+app.route("/me", meApp)
 // auth routing
 app.route("/auth", authApp)
 // routing for users

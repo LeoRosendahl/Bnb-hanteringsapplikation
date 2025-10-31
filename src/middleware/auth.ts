@@ -57,12 +57,12 @@ export async function requireAuth(c: Context, next: Next) {
     return c.json({error: "Supabase client not found"})
   }
   const {data, error} = await supabase.auth.getUser();
-  console.log(data, error)
   const user = data.user
-
+  //TODO: ta bort return next och ta ner c.set("user", user || null ) till antingen if eller under den googla
+  c.set("user", user || null )
+  return next()
   if(error || !user) {
     return c.json({error: "Unauthorized"}, 401);
   }
-  c.set("user", user)
   await next()
 }

@@ -34,7 +34,8 @@ export async function getListingById(id: string): Promise<Listing> {
 // post listing
 export const createListing = async (sb: SupabaseClient, listing: NewListing, userId: string) => {
     // adding listing_agent_id from userId to the listing object
-    const listingWithAgentId = {...listing, listing_agent_id: userId}
+    // -------------------------------------------------------------LISTING_AGENT_ID: userId-----------------------------------------------------------------------
+    const listingWithAgentId = {...listing, listing_agent_id: "0cb26f7e-1cc2-4b8f-8426-45ba7cb15771"}
     console.log("listingWithAgentId", listingWithAgentId)
     const query = sb.from("listings").insert(listingWithAgentId).select(listingWithAgentSelect).single();
     const response = await query as PostgrestSingleResponse<listingWithAgent>;

@@ -48,12 +48,27 @@ authApp.post("/login", async (c) => {
     email,
     password
   });
+  console.log(data?.session?.access_token)
   if (error) {
     throw new HTTPException(400, {
       res: c.json({error: "Invalid credentials"}, 400)
     });
   };
   return c.json(data.user, 200)
+})
+
+// logout function
+authApp.post("/logout", async (c) => {
+  const sb = c.get("supabase")
+  try{
+    const {error} = await sb.auth.signOut();
+    if(error) {
+      return c.json({error: error.message}, 400)
+    }
+    return c.json({message: "Logged out successfully"})
+  }catch(error) {
+    return c.json({error: "Logout failed"}, 500)
+  }
 })
 
 export default authApp;
