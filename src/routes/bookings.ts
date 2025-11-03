@@ -6,10 +6,7 @@ import type { PostgrestSingleResponse, User } from "@supabase/supabase-js";
 import { requireAuth, supabaseMiddleware } from "../middleware/auth.js";
 
 
-// booking POST titta på hur det ska gå till
-// för att skapa en booking måste en user klicka på booking
-// Koppla SQL frågor så att users väljer listings
-// Kan alltså inte ha en post funktion för detta??
+
 const bookingApp = new Hono();
 
 bookingApp.post("/", requireAuth, bookingValidator, async (c) => {
