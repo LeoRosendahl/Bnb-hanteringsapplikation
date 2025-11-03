@@ -34,10 +34,9 @@ export async function getListingById(id: string): Promise<Listing> {
 // post listing
 export const createListing = async (sb: SupabaseClient, listing: NewListing, userId: string) => {
     // adding listing_agent_id from userId to the listing object
-    // -------------------------------------------------------------LISTING_AGENT_ID: userId-----------------------------------------------------------------------
-    const listingWithAgentId = {...listing, listing_agent_id: "0cb26f7e-1cc2-4b8f-8426-45ba7cb15771"}
+    const listingWithAgentId = {...listing, listing_agent_id: userId}
     console.log("listingWithAgentId", listingWithAgentId)
-    const query = sb.from("listings").insert(listingWithAgentId).select(listingWithAgentSelect).single();
+    const query = sb.from("listings").insert([listingWithAgentId]).select(listingWithAgentSelect).single();
     const response = await query as PostgrestSingleResponse<listingWithAgent>;
     return response
 }
@@ -52,7 +51,7 @@ export async function deleteListing(sb: SupabaseClient, id: string): Promise<Lis
 // put listing
 export async function updateListing(sb: SupabaseClient, listing: Listing): Promise<Listing | null> {
 
-  const { data, error } = await sb.from("listings").update(listing).eq("id", listing.id).select().single();
+  const { data, error } = await sb.from("listings").update(listing).eq("id", listing.id).select(listingWithAgentSelect).single();
   if(error?.code === "PGRST116") {
     return null
   }  
@@ -62,13 +61,3 @@ export async function updateListing(sb: SupabaseClient, listing: Listing): Promi
     console.log(error)
   return data;
 }
-
-// export async function updateCourse(sb: SupabaseClient, id: string, course: NewCourse): Promise<Course | null> {
-//   const courseWithoutId: NewCourse = {
-//     ...course,
-//     course_id: undefined
-//   }  
-//   const query = sb.from("courses").update(courseWithoutId).eq("course_id", id).select().single();
-//   const response: PostgrestSingleResponse<Course> = await query;
-//   return response.data;
-// }

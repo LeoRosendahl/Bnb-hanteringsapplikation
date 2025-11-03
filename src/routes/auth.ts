@@ -11,14 +11,9 @@ const authApp = new Hono()
 authApp.post("/register", async (c) => {
   const { email, password, name } = await c.req.json();
   const sb = c.get("supabase");
-  // använder data, error då error är inbyggt i supabase authError hantering data
-  // får värdet av email och password
   const {data, error} = await sb.auth.signUp({ email, password});
-  if (error) {
-    throw new HTTPException(400, {
-      res: c.json({ error: error.message }, 400),
-    });
-  }
+  
+  if (error) return c.json({ error: error.message }, 400)
 
   const userId = data.user?.id;
   if(!userId) {

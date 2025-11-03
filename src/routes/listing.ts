@@ -11,7 +11,7 @@ listingApp.post("/", requireAuth, listingValidator, async (c) => {
     // get user to use as listing_agent_id
     const sb = c.get("supabase")
     const user = c.get("user")!
-
+    console.log("user in route:", user)
     // this gets the listing data from the request
     const listingData: NewListing = await c.req.json();
 
@@ -53,10 +53,23 @@ listingApp.delete("/:id", requireAuth, async (c) => {
     const id = c.req.param("id");
     const sb = c.get("supabase")
     const user = c.get("user")
+
     if (!user) {
         return c.json({ error: "Unothorizes" }, 401)
     }
+
     try {
+        const {data: listing, error: fetchError } = await sb.from("listings").select("id, listing_agent_id").eq("id", id).single();
+
+        if(fetchError || !listing) {
+            return c.json({ error: "Listing not found"}, 404);
+        }
+        // console-log to check listing_agent_id is the same as user.id 
+            console.log("user.id:", user.id);
+            console.log("listing.listing_agent_id:", listing.listing_agent_id);
+        if(listing.listing_agent_id !== user.id) {
+            return c.json({error: "You can only delete your own listing: user.id don't match listing_agent_id"}, 403)
+        }
         const deletedListing = await db.deleteListing(sb, id)
 
         if (!deletedListing) {
